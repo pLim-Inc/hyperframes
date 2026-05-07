@@ -1,0 +1,40 @@
+name: sync-upstream
+on:
+  schedule: [{ cron: "17 4 * * 1" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Sync from upstream
+        id: sync
+        uses: aormsby/Fork-Sync-With-Upstream-action@7e9a6ce741c8ed9fe5e1c1a4dc14db4e4d1c6fa6
+        with:
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+          upstream_sync_branch: ${{ vars.UPSTREAM_BRANCH || 'main' }}
+          upstream_sync_repo: ${{ vars.UPSTREAM_REPO }}
+      - name: Notify on critical changes via SMTP
+        if: steps.sync.outputs.has_new_commits == 'true'
+        env:
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        run: |
+          curl --fail --silent \
+            --user "noreply@plimlab.ch:$SMTP_PASSWORD" \
+            --mail-from "noreply@plimlab.ch" \
+            --mail-rcpt "${{ vars.NOTIFY_EMAIL }}" \
+            --upload-file - \
+            "smtps://mail.plimlab.ch:465" <<EOF
+          From: noreply@plimlab.ch
+          To: ${{ vars.NOTIFY_EMAIL }}
+          Subject: [pLim] upstream sync: ${{ github.repository }}
+
+          Sync merged. Review:
+          https://github.com/${{ github.repository }}/commits/main
+          EOF
