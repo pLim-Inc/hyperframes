@@ -1,13 +1,8 @@
 name: Catalog Previews
 
+# D50 (dono, 22/10): nada corre sozinho em runners da GitHub; repo pesado (fork upstream; Windows, sudo, schedule) → só manual.
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - "registry/blocks/**"
-      - "registry/components/**"
-      - "scripts/generate-catalog-previews.ts"
-      - ".github/workflows/catalog-previews.yml"
+  workflow_dispatch:
 
 concurrency:
   group: catalog-previews-${{ github.ref }}
