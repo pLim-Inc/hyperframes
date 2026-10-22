@@ -1,9 +1,8 @@
 name: Player perf
 
+# D50 (dono, 22/10): nada corre sozinho em runners da GitHub; repo pesado (fork upstream; Windows, sudo, schedule) → só manual.
 on:
-  pull_request:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: player-perf-${{ github.ref }}

@@ -1,8 +1,8 @@
 name: security-scan
+# D50 (dono, 22/10): nada corre sozinho em runners da GitHub; repo pesado (fork upstream; Windows, sudo, schedule) → só manual.
 on:
-  push: { branches: [main] }
-  pull_request: { branches: [main] }
-  schedule: [{ cron: "0 5 * * 1" }]
+  workflow_dispatch:
+
 permissions:
   contents: read
   security-events: write

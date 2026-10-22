@@ -1,7 +1,8 @@
 name: sync-upstream
+# D50 (dono, 22/10): nada corre sozinho em runners da GitHub; repo pesado (fork upstream; Windows, sudo, schedule) → só manual.
 on:
-  schedule: [{ cron: "17 4 * * 1" }]
   workflow_dispatch:
+
 permissions:
   contents: write
 jobs:
